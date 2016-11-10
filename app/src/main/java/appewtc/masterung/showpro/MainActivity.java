@@ -8,8 +8,18 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+
+import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -57,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //Internet OK
             deleteAllSQLite();
 
+
         }   // if
 
     }   // checkInternet
@@ -68,7 +79,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String[] strings = myConstant.getTableStrings();
         for (int i=1;i<strings.length;i++) {
             sqLiteDatabase.delete(strings[i], null, null);
-        }
+
+            SynPromotion synPromotion = new SynPromotion(MainActivity.this, i);
+            synPromotion.execute(myConstant.getUrlJSONString());
+
+        }   // for
 
 
     }
@@ -77,19 +92,70 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //Explicit
         private Context context;
+        private int anInt;
 
-        public SynPromotion(Context context) {
+        public SynPromotion(Context context, int anInt) {
             this.context = context;
+            this.anInt = anInt;
         }
 
         @Override
         protected String doInBackground(String... strings) {
-            return null;
+
+            try {
+
+                OkHttpClient okHttpClient = new OkHttpClient();
+                RequestBody requestBody = new FormEncodingBuilder()
+                        .add("isAdd", "true")
+                        .add("pro_brand", Integer.toString(anInt))
+                        .build();
+                Request.Builder builder = new Request.Builder();
+                Request request = builder.url(strings[0]).post(requestBody).build();
+                Response response = okHttpClient.newCall(request).execute();
+                return response.body().string();
+
+
+            } catch (Exception e) {
+                Log.d("10novV1", "e doIn ==> " + e.toString());
+                return null;
+            }
+
         }   // doInBack
 
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+
+            Log.d("10novV1", "index ==> " + anInt);
+            Log.d("10novV1", "JSON ==> " + s);
+
+            try {
+
+                JSONArray jsonArray = new JSONArray(s);
+                String[] columnStrings = myConstant.getColumnStrings();
+
+                for (int i=0;i<jsonArray.length();i++) {
+
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                    String[] resultStrings = new String[columnStrings.length];
+                    resultStrings[0] = null;
+
+                    for (int i1=1;i<columnStrings.length;i++) {
+
+                        resultStrings[i1] = jsonObject.getString(columnStrings[i1]);
+
+                    }   // for2
+
+                    myManage.addValueToSQLite(anInt, resultStrings);
+
+                }   // for
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
         }   // onPost
 
     }   // SynPromotion Class
