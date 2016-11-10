@@ -46,8 +46,16 @@ public class ShowPro extends AppCompatActivity {
                 R.drawable.dtac_logo, R.drawable.true_logo};
         imageView.setImageResource(iconInts[anInt]);
 
+        //Create ListView
+        MyConstant myConstant = new MyConstant();
+
 
 
     }   // Main Method
+
+
+
+
+
 
 }   // Main Class

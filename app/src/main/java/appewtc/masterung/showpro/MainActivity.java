@@ -10,12 +10,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //Explicit
     private ImageView aisImageView, dtacImageView, trueImageView;
+    private MyManage myManage;
+    private MyConstant myConstant;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        myManage = new MyManage(MainActivity.this);
+        myConstant = new MyConstant();
 
         //Bind Widget
         aisImageView = (ImageView) findViewById(R.id.imageView);
