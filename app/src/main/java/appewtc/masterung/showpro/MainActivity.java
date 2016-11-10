@@ -32,7 +32,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dtacImageView.setOnClickListener(this);
         trueImageView.setOnClickListener(this);
 
+        //Test Add Value to SQLite
+        testAddValue();
+
+
     }   // Main Method
+
+    private void testAddValue() {
+        String[] strings = new String[]{null,
+                "name", "detail",
+                "price", "reg",
+                "period", "date"};
+
+        myManage.addValueToSQLite(1, strings);
+        myManage.addValueToSQLite(2, strings);
+        myManage.addValueToSQLite(3, strings);
+
+
+    }
 
     @Override
     public void onClick(View view) {
